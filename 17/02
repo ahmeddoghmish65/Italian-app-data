@@ -666,9 +666,34 @@
         </div>
         <div class="settings-section">
             <div class="settings-title">معلومات</div>
-            <div class="settings-item" onclick="openInfoPage('about')"><div class="settings-item-info"><div class="settings-item-icon"><i class="fas fa-info-circle"></i></div><div class="settings-item-text"><h4>من نحن</h4><p>تعرف علينا</p></div></div><i class="fas fa-chevron-left" style="color: var(--text-secondary);"></i></div>
-            <div class="settings-item" onclick="openInfoPage('contact')"><div class="settings-item-info"><div class="settings-item-icon"><i class="fas fa-envelope"></i></div><div class="settings-item-text"><h4>اتصل بنا</h4><p>تواصل معنا</p></div></div><i class="fas fa-chevron-left" style="color: var(--text-secondary);"></i></div>
-            <div class="settings-item" onclick="openInfoPage('privacy')"><div class="settings-item-info"><div class="settings-item-icon"><i class="fas fa-shield-alt"></i></div><div class="settings-item-text"><h4>سياسة الخصوصية</h4><p>كيف نحمي بياناتك</p></div></div><i class="fas fa-chevron-left" style="color: var(--text-secondary);"></i></div>
+            <div class="settings-item" onclick="openInfoPage('about')">
+                <div class="settings-item-info">
+                    <div class="settings-item-icon"><i class="fas fa-info-circle"></i></div>
+                    <div class="settings-item-text"><h4>من نحن</h4><p>تعرف علينا</p></div>
+                </div>
+                <i class="fas fa-chevron-left" style="color: var(--text-secondary);"></i>
+            </div>
+            <div class="settings-item" onclick="openInfoPage('contact')">
+                <div class="settings-item-info">
+                    <div class="settings-item-icon"><i class="fas fa-envelope"></i></div>
+                    <div class="settings-item-text"><h4>اتصل بنا</h4><p>تواصل معنا</p></div>
+                </div>
+                <i class="fas fa-chevron-left" style="color: var(--text-secondary);"></i>
+            </div>
+            <div class="settings-item" onclick="openInfoPage('privacy')">
+                <div class="settings-item-info">
+                    <div class="settings-item-icon"><i class="fas fa-shield-alt"></i></div>
+                    <div class="settings-item-text"><h4>سياسة الخصوصية</h4><p>كيف نحمي بياناتك</p></div>
+                </div>
+                <i class="fas fa-chevron-left" style="color: var(--text-secondary);"></i>
+            </div>
+            <div class="settings-item" onclick="openInfoPage('terms')">
+                <div class="settings-item-info">
+                    <div class="settings-item-icon"><i class="fas fa-file-contract"></i></div>
+                    <div class="settings-item-text"><h4>شروط الخدمة</h4><p>شروط الاستخدام</p></div>
+                </div>
+                <i class="fas fa-chevron-left" style="color: var(--text-secondary);"></i>
+            </div>
         </div>
         <div class="settings-section">
             <div class="settings-title">البيانات</div>
