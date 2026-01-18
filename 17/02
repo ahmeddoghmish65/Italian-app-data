@@ -1742,91 +1742,110 @@ function openPhraseCategory(id) {
     addXP(2);
 }
 
-// ==================== Conversations ====================
-function renderConversations() {
-    const container = $('conversationsList');
-    const convs = DATABASE.conversations[appState.currentLevel] || [];
-    if (!convs.length) { container.innerHTML = '<div class="empty-state"><i class="fas fa-comments"></i><p>لا توجد محادثات</p></div>'; return; }
-    container.innerHTML = convs.map(c =>
-        `<div class="category-item" onclick="openConversation('${c.id}')"><div class="category-icon" style="background: linear-gradient(135deg, var(--b1-color), #FBBF24); color: white;"><i class="fas fa-${getCategoryIcon(c.icon, c.id)}"></i></div><div class="category-info"><div class="category-name">${c.title}</div><div class="category-meta">${c.dialogue?.length || 0} جملة</div></div><i class="fas fa-chevron-left category-arrow"></i></div>`
-    ).join('');
-}
+        // ==================== Conversations ====================
+        function renderConversations() {
+            const container = document.getElementById('conversationsList');
+            const convs = DATABASE.conversations[appState.currentLevel] || [];
+            if (!convs.length) { container.innerHTML = '<div class="empty-state"><i class="fas fa-comments"></i><p>لا توجد محادثات لهذا المستوى</p></div>'; return; }
+            container.innerHTML = convs.map(c => `
+                <div class="category-item" onclick="openConversation('${c.id}')">
+                    <div class="category-icon" style="background: linear-gradient(135deg, var(--b1-color), #FBBF24); color: white;"><i class="fas fa-${getCategoryIcon(c.icon, c.id)}"></i></div>
+                    <div class="category-info">
+                        <div class="category-name">${c.title}</div>
+                        <div class="category-meta">${c.dialogue?.length || 0} جملة</div>
+                    </div>
+                    <i class="fas fa-chevron-left category-arrow"></i>
+                </div>
+            `).join('');
+        }
 
-function openConversation(id) {
-    const conv = (DATABASE.conversations[appState.currentLevel] || []).find(c => c.id === id);
-    if (!conv) return;
-    currentConversation = conv;
-    $('conversationDetailTitle').textContent = conv.title;
-    renderConversationContent();
-    $$('.page').forEach(p => p.classList.remove('active'));
-    $('conversationDetailPage').classList.add('active');
-    addXP(3);
-}
+        function openConversation(conversationId) {
+            const convs = DATABASE.conversations[appState.currentLevel] || [];
+            const conversation = convs.find(c => c.id === conversationId);
+            if (!conversation) return;
+            currentConversation = conversation;
+            document.getElementById('conversationDetailTitle').textContent = conversation.title;
+            
+            let html = '<div class="conversation-container">';
+            conversation.dialogue.forEach((line, index) => {
+                html += `
+                    <div class="conversation-bubble person-${line.speaker.toLowerCase()}" id="conv-line-${index}">
+                        <button class="conversation-speak-btn" onclick="speakConversationLine(${index})"><i class="fas fa-volume-up"></i></button>
+                        <div class="conversation-speaker">${line.name}</div>
+                        <div class="conversation-text-it">${line.it}</div>
+                        <div class="conversation-text-ar">${line.ar}</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            html += `
+                <div class="conversation-controls">
+                    <div class="conversation-speed-control">
+                        <span class="conversation-speed-label">السرعة:</span>
+                        <button class="conversation-speed-btn ${appState.conversationSpeed === 0.7 ? 'active' : ''}" onclick="setConversationSpeed(0.7)">بطيء</button>
+                        <button class="conversation-speed-btn ${appState.conversationSpeed === 1 ? 'active' : ''}" onclick="setConversationSpeed(1)">عادي</button>
+                        <button class="conversation-speed-btn ${appState.conversationSpeed === 1.2 ? 'active' : ''}" onclick="setConversationSpeed(1.2)">سريع</button>
+                    </div>
+                    <button class="word-control-btn primary" onclick="playFullConversation()" style="width: 100%;" id="playConvBtn">
+                        <i class="fas fa-play"></i> استمع للمحادثة كاملة
+                    </button>
+                </div>
+            `;
+            
+            document.getElementById('conversationDetailContent').innerHTML = html;
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            showPage('conversationDetailPage');
+            addXP(3);
+        }
 
-function renderConversationContent() {
-    if (!currentConversation) return;
-    let html = '<div class="conversation-container">';
-    currentConversation.dialogue.forEach((line, i) => {
-        html += `<div class="conversation-bubble person-${line.speaker.toLowerCase()}" id="conv-line-${i}"><button class="conversation-speak-btn" onclick="speakLine(${i})"><i class="fas fa-volume-up"></i></button><div class="conversation-speaker"><span class="conversation-speaker-avatar">${line.speaker}</span>${line.name}</div><div class="conversation-text-it">${line.it}</div><div class="conversation-text-ar">${line.ar}</div></div>`;
-    });
-    html += '</div>';
-    html += `<div class="conversation-controls"><div class="conversation-speed-control"><span class="conversation-speed-label">السرعة:</span><button class="conversation-speed-btn ${appState.conversationSpeed === 0.6 ? 'active' : ''}" onclick="setSpeed(0.6)">🐢</button><button class="conversation-speed-btn ${appState.conversationSpeed === 0.8 ? 'active' : ''}" onclick="setSpeed(0.8)">🚶</button><button class="conversation-speed-btn ${appState.conversationSpeed === 1 ? 'active' : ''}" onclick="setSpeed(1)">🏃</button></div><button class="conversation-play-btn ${conversationPlaying ? 'playing' : ''}" onclick="toggleConversation()" id="playConvBtn"><i class="fas fa-${conversationPlaying ? 'stop' : 'play'}"></i> ${conversationPlaying ? 'إيقاف' : 'تشغيل'}</button><div class="conversation-progress-bar"><div class="conversation-progress-fill" id="convProgressFill" style="width: 0%"></div></div></div>`;
-    $('conversationDetailContent').innerHTML = html;
-}
+        function speakConversationLine(index) {
+            if (!currentConversation) return;
+            const line = currentConversation.dialogue[index];
+            if (line) { speak(line.it, appState.conversationSpeed); highlightConversationLine(index); }
+        }
 
-function speakLine(i) {
-    const line = currentConversation?.dialogue[i];
-    if (line) { speak(line.it, appState.conversationSpeed); highlightLine(i); }
-}
+        function highlightConversationLine(index) {
+            document.querySelectorAll('.conversation-bubble').forEach(el => { el.style.transform = 'scale(1)'; el.style.boxShadow = ''; });
+            const lineEl = document.getElementById(`conv-line-${index}`);
+            if (lineEl) {
+                lineEl.style.transform = 'scale(1.02)';
+                lineEl.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+                lineEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
 
-function highlightLine(i) {
-    $$('.conversation-bubble').forEach(el => el.classList.remove('highlighted'));
-    $(`conv-line-${i}`)?.classList.add('highlighted');
-    const fill = $('convProgressFill');
-    if (fill && currentConversation) fill.style.width = `${((i + 1) / currentConversation.dialogue.length) * 100}%`;
-}
+        function setConversationSpeed(speed) {
+            appState.conversationSpeed = speed;
+            saveState();
+            document.querySelectorAll('.conversation-speed-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
 
-function setSpeed(s) {
-    appState.conversationSpeed = s; saveState();
-    $$('.conversation-speed-btn').forEach(b => b.classList.remove('active'));
-    event.target.classList.add('active');
-}
+        async function playFullConversation() {
+            if (!currentConversation || conversationPlaying) return;
+            conversationPlaying = true;
+            const btn = document.getElementById('playConvBtn');
+            btn.innerHTML = '<i class="fas fa-stop"></i> إيقاف';
+            btn.onclick = stopConversation;
+            
+            const baseDelay = 2500 / appState.conversationSpeed;
+            for (let i = 0; i < currentConversation.dialogue.length; i++) {
+                if (!conversationPlaying) break;
+                const line = currentConversation.dialogue[i];
+                highlightConversationLine(i);
+                speak(line.it, appState.conversationSpeed);
+                await new Promise(resolve => setTimeout(resolve, baseDelay + (line.it.length * 50)));
+            }
+            stopConversation();
+        }
 
-function toggleConversation() { conversationPlaying ? stopConversation() : playConversation(); }
-
-async function playConversation() {
-    if (!currentConversation || conversationPlaying) return;
-    conversationPlaying = true;
-    const btn = $('playConvBtn');
-    if (btn) { btn.innerHTML = '<i class="fas fa-stop"></i> إيقاف'; btn.classList.add('playing'); }
-    for (let i = 0; i < currentConversation.dialogue.length && conversationPlaying; i++) {
-        highlightLine(i);
-        await speakAndWait(currentConversation.dialogue[i].it, appState.conversationSpeed);
-        if (!conversationPlaying) break;
-        await new Promise(r => setTimeout(r, 1500 / appState.conversationSpeed));
-    }
-    if (conversationPlaying) showToast('🎉 انتهت المحادثة!', 'success');
-    stopConversation();
-}
-
-function speakAndWait(text, rate) {
-    return new Promise(resolve => {
-        if (!appState.soundEnabled || !('speechSynthesis' in window)) { resolve(); return; }
-        speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(text);
-        u.lang = 'it-IT'; u.rate = rate;
-        u.onend = resolve; u.onerror = resolve;
-        speechSynthesis.speak(u);
-    });
-}
-
-function stopConversation() {
-    conversationPlaying = false;
-    speechSynthesis.cancel();
-    const btn = $('playConvBtn');
-    if (btn) { btn.innerHTML = '<i class="fas fa-play"></i> تشغيل'; btn.classList.remove('playing'); }
-    $$('.conversation-bubble').forEach(el => el.classList.remove('highlighted'));
-}
+        function stopConversation() {
+            conversationPlaying = false;
+            speechSynthesis.cancel();
+            const btn = document.getElementById('playConvBtn');
+            if (btn) { btn.innerHTML = '<i class="fas fa-play"></i> استمع للمحادثة كاملة'; btn.onclick = playFullConversation; }
+            document.querySelectorAll('.conversation-bubble').forEach(el => { el.style.transform = 'scale(1)'; el.style.boxShadow = ''; });
+        }
 
 // ==================== Grammar ====================
 function renderGrammar() {
