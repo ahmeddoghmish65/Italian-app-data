@@ -1244,6 +1244,22 @@
     </div>
 
 <script>
+// ==================== Welcome Modal ====================
+function showWelcomeModal() {
+    // تحقق إذا كان المستخدم شاف الرسالة قبل كده
+    if (!localStorage.getItem('sahlitaly_welcome_shown')) {
+        setTimeout(() => {
+            $('welcomeModalOverlay')?.classList.add('show');
+        }, 1000); // تظهر بعد ثانية من فتح التطبيق
+    }
+}
+
+function closeWelcomeModal() {
+    $('welcomeModalOverlay')?.classList.remove('show');
+    // حفظ أن المستخدم شاف الرسالة
+    localStorage.setItem('sahlitaly_welcome_shown', 'true');
+    showToast('🎉 حظاً موفقاً في التعلم!', 'success');
+}
 // ==================== Helpers ====================
 const debounce = (fn, delay) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), delay); }; };
 const throttle = (fn, limit) => { let f; return (...a) => { if (!f) { fn(...a); f = true; setTimeout(() => f = false, limit); } }; };
