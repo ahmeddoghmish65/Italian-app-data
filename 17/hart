@@ -1435,6 +1435,7 @@ async function initApp() {
     updateDailyGoalUI();
     renderWeeklyChart();
     updateLevelProgressIndicators();
+    showWelcomeModal();
 }
 
 function loadState() {
