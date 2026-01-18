@@ -716,6 +716,26 @@
     </div>
 
     <div class="confirm-dialog" id="confirmDialog">
+<!-- Welcome Message Modal -->
+<div class="welcome-modal-overlay" id="welcomeModalOverlay">
+    <div class="welcome-modal" id="welcomeModal">
+        <div class="welcome-modal-icon">🎉</div>
+        <div class="welcome-modal-title">مرحباً بك في سهل إيطالي!</div>
+        <div class="welcome-modal-text">
+            نحن سعداء بانضمامك إلينا! 🇮🇹
+            <br><br>
+            تطبيقنا يساعدك على تعلم اللغة الإيطالية من المستوى A1 إلى B2 بطريقة سهلة وممتعة.
+            <br><br>
+            💡 <strong>نصيحة:</strong> حاول التعلم يومياً لمدة 10 دقائق على الأقل للحصول على أفضل النتائج!
+        </div>
+        <button class="welcome-modal-btn" onclick="closeWelcomeModal()">
+            <i class="fas fa-play"></i> ابدأ التعلم
+        </button>
+        <div class="welcome-modal-footer">
+            بالتوفيق في رحلة التعلم! 🌟
+        </div>
+    </div>
+</div>
         <div class="confirm-dialog-icon" id="confirmIcon">🗑️</div>
         <div class="confirm-dialog-title" id="confirmTitle">حذف الكلمة؟</div>
         <div class="confirm-dialog-text" id="confirmText">هل تريد حذف هذه الكلمة من المفضلة؟</div>
